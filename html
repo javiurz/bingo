@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tómbola Derecho Colectivo</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff3e0;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #e65100;
+    }
+    #question {
+      background-color: #ffe0b2;
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid #ff9800;
+      margin: 20px;
+      width: 80%;
+      text-align: center;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+    }
+    #yes {
+      background-color: #4caf50;
+      color: white;
+    }
+    #no {
+      background-color: #f44336;
+      color: white;
+    }
+    #answered {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      width: 300px;
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Tómbola Derecho Colectivo</h1>
+  <div id="question">Haz clic en una opción para comenzar</div>
+  <div class="buttons">
+    <button id="yes">Sí, respondí</button>
+    <button id="no">No, siguiente</button>
+  </div>
+  <div id="answered">
+    <strong>Respondidas:</strong>
+    <ul id="answered-list"></ul>
+  </div>
+
+  <script>
+    const preguntas = [
+      "Indique 3 sucesos de la Historia del Derecho Colectivo del Trabajo en Chile",
+      "Proporciones una definición del Derecho Colectivo del Trabajo",
+      "¿Cuál son las diferencias entre el Derecho Colectivo del Trabajo y el Derecho Individual del Trabajo?",
+      "¿Cuál es el objetivo del Modelo Británico de Derecho Colectivo del Trabajo?",
+      "¿Cuál es el concepto legal de Empresa?",
+      "¿Cuáles son los elementos del concepto legal de Empresa?",
+      "¿Cuál es el concepto legal de Unidad Económica?",
+      "Proporciones 3 características de la organización y funcionamiento de la Empresa Fordista",
+      "Proporciones 3 características de la organización y funcionamiento de la Empresa Toyotista",
+      "Distinga los 3 niveles de Poder de la Empresa Toyotista",
+      "¿Qué relevancia jurídica tiene el Convenio N° 87 de la OIT?",
+      "¿Qué relevancia jurídica tiene el Convenio N° 98 de la OIT?",
+      "¿Qué relevancia jurídica tiene el Convenio N° 135 de la OIT?",
+      "¿Qué relevancia jurídica tiene el Convenio N° 151 de la OIT?",
+      "¿Qué es la Participación en el Trabajo?",
+      "Distinga los tipos de Participación en el Trabajo",
+      "¿Cuál es la función normativa del Acuerdo Colectivo?",
+      "¿Cuál es la función obligacional del Acuerdo Colectivo?",
+      "¿Cómo se clasifican los Modelos Conflictivos?",
+      "¿Cómo se definen los Modelos Negociales?",
+      "¿Cuál era el quórum de constitución del Sindicato Industrial en el Código del Trabajo de 1931 y qué efecto producía cumplirlo?",
+      "¿Cuáles era las potestades de la Asamblea Sindical en el Código del Trabajo de 1931?",
+      "¿Cuál era la composición de la Junta Conciliadora en el Código del Trabajo de 1931?",
+      "¿Cómo se define la Negociación?",
+      "¿Dónde se encuentra protegido el Derecho de Asociación en Ordenamiento Jurídico nacional?",
+      "¿Cuál es el concepto de Libertad Sindical?",
+      "¿Por qué se sostiene que la Libertad Sindical es un producto histórico?",
+      "¿Cuál era la composición de las Corporaciones Medievales?",
+      "¿Qué importancia tuvo la Ley Le Chapelier?",
+      "¿Cuáles son las dimensiones de la Libertad Sindical?",
+      "¿Cuáles son los elementos de la Libertad Sindical?",
+      "¿Qué es la Libertad Sindical Negativa?",
+      "¿Cuál es la regla general en materia de Libertad Colectiva de Disolución?",
+      "Proporcione la clasificación de Organizaciones Sindicales del Artículo 216 del Código del Trabajo",
+      "Proporcione 3 Fines Principales de las Organizaciones Sindicales",
+      "¿Cuáles son las categorías doctrinarias en que se clasifican los fines del Artículo 220 del Código del Trabajo?",
+      "¿Qué implicancia orgánica tiene el Principio Jerárquico Piramidal?",
+      "¿Cuáles son los quórums de constitución del Sindicato de Empresa?",
+      "¿Qué alcance tiene el fuero de constitución de un Sindicato de Empresa?",
+      "¿Qué se debe hacer en una Asamblea de constitución de un Sindicato de Empresa?",
+      "¿Qué se debe notificar al Empleador luego de la constitución de un Sindicato de Empresa?",
+      "¿Cuándo y qué debe documentos deben depositar en la Inspección del Trabajo luego de la constitución de un Sindicato de Empresa?",
+      "¿Quiénes pueden ser Ministros de Fe Laborales?",
+      "Describa el procedimiento que debe seguir el Sindicato ante notificación de Objeciones de Legalidad del Estatuto",
+      "¿Qué es el Estatuto Sindical?",
+      "Proporcione 5 contenidos mínimos de un Estatuto Sindical",
+      "Proporcione 3 contenidos facultativos de un Estatuto Sindical",
+      "¿Cuáles son los requisitos para Reformar los Estatutos Sindicales?",
+      "¿Qué es el Directorio de una Organización Sindical?",
+      "¿Cuáles son las formalidades exigidas por la ley para la elección de un Directorio Sindical?",
+      "¿Cuáles son las funciones de un Directorio Sindical?",
+      "¿Cuáles son las reglas específicas de cesación de un Directorio Sindical?",
+      "¿Qué es la censura de un Directorio Sindical y cuáles son sus efectos?",
+      "¿Qué es el fuero sindical y cuál es su alcance temporal?",
+      "¿Cuáles son las excepciones que terminan anticipadamente el fuero sindical?",
+      "¿Cuántos Directores tienen fuero en un Sindicato de acuerdo con la ley?",
+      "Nombre 3 Representantes de Trabajadores que reciben protección de fuero en la legislación",
+      "¿Qué son los Permisos Sindicales y qué protegen?",
+      "¿Cuál es el mínimo legal de horas semanales de Permiso Sindical en el Código del Trabajo y qué pasa si un Director no las utiliza?",
+      "¿En qué consiste la dimensión técnica de la Reforma Laboral de 2016?",
+      "¿Qué tipos de Derecho al Información se reconocer para los trabajadores y sus organizaciones sindicales?",
+      "¿Qué tipos de Procedimientos de Negociación Colectiva se reconocen en el Código del Trabajo?",
+      "¿Cuáles son las materias generales de la Negociación Colectiva?",
+      "¿Cuáles son las materias facultativas de la Negociación Colectiva?",
+      "¿Cuáles son las materias que no pueden ser objeto de Negociación Colectiva?",
+      "¿Cuál es la antigüedad mínima en la Empresa para poder participar en un proceso de Negociación?",
+      "¿Qué información específica debe proporcionar el Empleador para el proceso de Negociación Colectiva, tanto en Grandes y Medianas como en pequeñas Empresas?",
+      "¿Cuáles son las categorías de riesgos que se deben cubrir por los Servicios Mínimos?",
+      "¿Cuál es el plazo que disponen los Sindicatos para presentar Proyecto de Contrato Colectivo, cuando está vigente un Instrumento Colectivo anterior?",
+      "¿Qué plazo tiene el Empleador para dar respuesta al Contrato Colectivo?, ¿Se puede prorrogar?",
+      "¿Qué trabajadores no pueden ejercer el Derecho a Huelga en el Procedimiento de Negociación Colectiva reglada?",
+      "¿Cuáles son los efectos de la Huelga legal?",
+      "¿Cuáles son los requisitos para declarar el Cierre Temporal o Lock out de la Empresa?",
+      "¿Qué ocurre con las estipulaciones de un Contrato Colectivo cuando se extingue?",
+      "¿Cuáles son los principios formativos del Procedimiento Laboral?",
+      "Refiérase a dos materias que son de competencia de Juzgados de Letras del Trabajo",
+      "¿Cuáles son los requisitos de la Demanda Laboral?",
+      "¿Cuáles son las fases de la Audiencia Preparatoria?",
+      "¿Cuáles son las fases de la Audiencia de Juicio?",
+      "¿Cuáles son los requisitos de la Sentencia?",
+      "¿Cuáles son las causales genéricas del Recurso de Nulidad?",
+      "¿En qué medida el Recurso de Unificación de Jurisprudencia es una fuente formal de derecho?",
+      "¿Cuáles son los requisitos especiales de la Denuncia de Vulneración de Derechos Fundamentales?",
+      "¿En qué consiste la Regla de Alivianamiento Probatorio del Procedimiento de Tutela de Derechos Fundamentales?"
+    ];
+
+    let pendientes = [...preguntas];
+    let preguntaActual = null;
+
+    const questionDiv = document.getElementById('question');
+    const answeredList = document.getElementById('answered-list');
+
+    function mostrarPregunta() {
+      if (pendientes.length === 0) {
+        questionDiv.innerText = "¡Has respondido todas las preguntas!";
+        return;
+      }
+      const index = Math.floor(Math.random() * pendientes.length);
+      preguntaActual = pendientes[index];
+      questionDiv.innerText = preguntaActual;
+    }
+
+    document.getElementById('yes').addEventListener('click', () => {
+      if (preguntaActual) {
+        pendientes = pendientes.filter(p => p !== preguntaActual);
+        const li = document.createElement('li');
+        li.innerText = preguntaActual;
+        answeredList.appendChild(li);
+        mostrarPregunta();
+      }
+    });
+
+    document.getElementById('no').addEventListener('click', () => {
+      mostrarPregunta();
+    });
+
+    mostrarPregunta();
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
